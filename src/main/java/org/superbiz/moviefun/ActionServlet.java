@@ -17,6 +17,7 @@
 package org.superbiz.moviefun;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.superbiz.moviefun.movies.Movie;
 import org.superbiz.moviefun.movies.MoviesBean;
@@ -39,8 +40,8 @@ public class ActionServlet extends HttpServlet {
 
     public static int PAGE_SIZE = 5;
 
-    @EJB
-    private MoviesBean moviesBean;
+    @Autowired
+    private HomeController homeController;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -65,7 +66,7 @@ public class ActionServlet extends HttpServlet {
 
             Movie movie = new Movie(title, director, genre, rating, year);
 
-            moviesBean.addMovie(movie);
+            homeController.addMovie(movie);
             response.sendRedirect("moviefun");
             return;
 
@@ -73,7 +74,7 @@ public class ActionServlet extends HttpServlet {
 
             String[] ids = request.getParameterValues("id");
             for (String id : ids) {
-                moviesBean.deleteMovieId(new Long(id));
+                homeController.deleteMovieId(new Long(id));
             }
 
             response.sendRedirect("moviefun");
@@ -86,11 +87,11 @@ public class ActionServlet extends HttpServlet {
             int count = 0;
 
             if (StringUtils.isEmpty(key) || StringUtils.isEmpty(field)) {
-                count = moviesBean.countAll();
+                count = homeController.countAll();
                 key = "";
                 field = "";
             } else {
-                count = moviesBean.count(field, key);
+                count = homeController.count(field, key);
             }
 
             int page = 1;
@@ -117,9 +118,9 @@ public class ActionServlet extends HttpServlet {
             List<Movie> range;
 
             if (StringUtils.isEmpty(key) || StringUtils.isEmpty(field)) {
-                range = moviesBean.findAll(start, PAGE_SIZE);
+                range = homeController.findAll(start, PAGE_SIZE);
             } else {
-                range = moviesBean.findRange(field, key, start, PAGE_SIZE);
+                range = homeController.findRange(field, key, start, PAGE_SIZE);
             }
 
             int end = start + range.size();
